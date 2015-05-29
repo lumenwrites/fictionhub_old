@@ -309,8 +309,9 @@ def story_feed(request, story):
         
         link = SubElement(item,'link')
         link.text = request.build_absolute_uri(index.get_absolute_url())
-
-    return HttpResponse(tostring(rss, encoding='UTF-8'))
+    rsp = HttpResponse(tostring(rss, encoding='UTF-8'))
+    
+    return HttpResponse(tostring(rss, encoding='UTF-8'), content_type='text/xml')
 
 
 
