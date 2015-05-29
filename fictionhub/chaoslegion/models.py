@@ -6,6 +6,7 @@ from django.db.models import permalink
 # from django.contrib.auth.models import User
 # But I'm replacing it instead:
 from django.contrib.auth.models import AbstractUser
+import json
 
 
 # Create your models here.
@@ -45,7 +46,7 @@ class Story(models.Model):
     pub_date = models.DateTimeField(auto_now_add=True)
     description = models.TextField()
     author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="stories")
-
+    voters = models.TextField(default={})
     hubs = models.ManyToManyField('Hub', related_name="stories", blank=True)
     score = models.IntegerField(default=0)
 
@@ -56,6 +57,12 @@ class Story(models.Model):
         self.slug = slugify(self.title)
         super(Story, self).save(*args, **kwargs)
 
+    def score(self):
+        num = 0
+        for index in json.loads(self.voters).items():
+            num = num + int(index[1])
+        return num
+        
     @permalink
     def get_absolute_url(self):
         return ('view_story', None, { 'story': self.slug })        
