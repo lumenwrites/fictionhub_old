@@ -3,6 +3,7 @@ from django.utils.timezone import utc
 import re
 import praw
 from xml.etree.ElementTree import Element, SubElement, tostring
+import json
 
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse
@@ -308,9 +309,7 @@ def story_feed(request, story):
         title_c.text = index.title
         
         link = SubElement(item,'link')
-        link.text = request.build_absolute_uri(index.get_absolute_url())
-    rsp = HttpResponse(tostring(rss, encoding='UTF-8'))
-    
+        link.text = request.build_absolute_uri(index.get_absolute_url())    
     return HttpResponse(tostring(rss, encoding='UTF-8'), content_type='text/xml')
 
 
@@ -357,8 +356,20 @@ def downvote(request):
     user.save()
     return HttpResponse()
 
+def vote(request, story):
+    story = Story.objects.get(slug=story)
+    voters = json.loads(story.voters)
+    voter = request.GET.get('voter')
+    amt = request.GET.get('amount')
+    if abs(int(amt)) == 1:
+        voters[voter] = amt
+        story.voters = json.dumps(voters)
+        story.save()
+    else:
+        # Shenanigans are afoot!
+        return HttpResponse('If you can see this, please submit an issue on github')
 
-
+    return HttpResponse(str(story.score()))
 
 # Submit post
 @login_required

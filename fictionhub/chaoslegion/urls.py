@@ -40,6 +40,7 @@ urlpatterns = [
     url(r'^story/(?P<story>[^\.]+)', views.story, name='view_story'),    
     
     url(r'^story/(?P<story>[^\.]+)/feed$', views.story_feed),    
+    url(r'^story/(?P<story>[^\.]+)/vote$', views.vote),    
 
     #################### User Page ####################
     url(r'^user/(?P<username>[^\.]+)/about', views.about, name='about'),
