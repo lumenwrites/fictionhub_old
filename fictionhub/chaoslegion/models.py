@@ -34,12 +34,6 @@ class Post(models.Model):
         self.slug = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
 
-    def score(self):
-        num = 0
-        for index in json.loads(self.voters).items():
-            num = num + int(index[1])
-        return num
-        
     # Response from get_absolute_url: /blog/view/how-to-create-a-basic-blog-in-django.html
     @permalink
     def get_absolute_url(self):
@@ -63,6 +57,12 @@ class Story(models.Model):
         self.slug = slugify(self.title)
         super(Story, self).save(*args, **kwargs)
 
+    def score(self):
+        num = 0
+        for index in json.loads(self.voters).items():
+            num = num + int(index[1])
+        return num
+        
     @permalink
     def get_absolute_url(self):
         return ('view_story', None, { 'story': self.slug })        
